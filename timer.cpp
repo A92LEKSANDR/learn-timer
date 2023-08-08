@@ -14,13 +14,16 @@ class Timer{
     public:
     Timer(int value, std::string path_):min(value),path(path_){
             //block code for protection error input
+        out.open(path,std::ios_base::app);
+
         if(!out.is_open()){
-            bool open = false;
-            while(!open){
+            bool openFile = false;
+
+            while(!openFile){
                 std::cout << "path not found/ file.txt!\npress enter try again path: ";
                 std::cin >> path;
                 if(out.is_open()){
-                    open = true;
+                    openFile = true;
                 }
             }
         }//
@@ -52,26 +55,33 @@ class Timer{
 }//while
 
         //save txt information time and turn off display
-        out.open(path,std::ios_base::app);
+       
 
         const char* currentTime = std::ctime(&start);//convert time fot char[]
 
-        out << "\ncurrent time: " << currentTime << "\n25 minuts of learn\nand five minuts time-out";
+        out << "\ncurrent time: " << currentTime << "25 minuts of learn\nand five minuts time-out";
         out.close();
 
         SendMessage(HWND_BROADCAST, WM_SYSCOMMAND, SC_MONITORPOWER, (LPARAM)2);//turn off display
         
     }
+
+     ~Timer(){}
 };
 
 int main(){
 
-    Timer timer(25, "C:/timer.txt"); // where be win application, press button chouse and input text
+    //Timer timer(1, "C:/learn.txt"); // where be win application, press button chouse and input text
     char option{'\0'};
+    Timer* list = nullptr;
 
     do{
-        timer.start();
+        list = new Timer{1,"C:/learn.txt"};
+        list->start();
+
         std::cout << "press enter y to continue/press enter n to exit: ";
+        
+        list->~Timer();
 
         std::cin >> option;
 
