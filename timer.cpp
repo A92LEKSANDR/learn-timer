@@ -10,8 +10,21 @@
 class Timer{
     int min;
     std::string path;
+    std::fstream out;
     public:
-    Timer(int value, std::string path_):min(value),path(path_){}
+    Timer(int value, std::string path_):min(value),path(path_){
+            //block code for protection error input
+        if(!out.is_open()){
+            bool open = false;
+            while(!open){
+                std::cout << "path not found/ file.txt!\npress enter try again path: ";
+                std::cin >> path;
+                if(out.is_open()){
+                    open = true;
+                }
+            }
+        }//
+    }
 
     void start(){
         std::time_t start = std::time(0);//?
@@ -39,20 +52,7 @@ class Timer{
 }//while
 
         //save txt information time and turn off display
-        std::fstream out;
         out.open(path,std::ios_base::app);
-
-        //block code for protection error input
-        if(!out.is_open()){
-            bool open = false;
-            while(!open){
-                std::cout << "path not found/ file.txt!\npress enter try again path: ";
-                std::cin >> path;
-                if(out.is_open()){
-                    open = true;
-                }
-            }
-        }//
 
         const char* currentTime = std::ctime(&start);//convert time fot char[]
 
