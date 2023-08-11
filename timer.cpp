@@ -34,7 +34,7 @@ class Timer{
 
         while(min > 0){
             --min;
-             for(int i = 9; i > 0; --i){
+             for(int i = 59; i > 0; --i){
              std::cout << "\nTime of minuts: " << min << " seconds: " << i << '\n';
              std::this_thread::sleep_for(std::chrono::seconds(1));//?
             
@@ -42,7 +42,7 @@ class Timer{
             if(_kbhit()){
             char ch = _getch();
                 if(ch == 'p' || ch == 'P'){
-                    for(int i = 3; i > 0; --i){
+                    for(int i = 300; i > 0; --i){
                     std::cout << "\ntime-out seconds: " << i << '\n';
                     std::this_thread::sleep_for(std::chrono::seconds(1));//?
     
