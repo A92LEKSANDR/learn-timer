@@ -34,7 +34,7 @@ class Timer{
 
         while(min > 0){
             --min;
-             for(int i = 59; i > 0; --i){
+             for(int i = 9; i > 0; --i){
              std::cout << "\nTime of minuts: " << min << " seconds: " << i << '\n';
              std::this_thread::sleep_for(std::chrono::seconds(1));//?
             
@@ -42,8 +42,7 @@ class Timer{
             if(_kbhit()){
             char ch = _getch();
                 if(ch == 'p' || ch == 'P'){
-                    //SendMessage(HWND_BROADCAST, WM_SYSCOMMAND, SC_MONITORPOWER, (LPARAM)2);
-                    for(int i = 300; i > 0; --i){
+                    for(int i = 3; i > 0; --i){
                     std::cout << "\ntime-out seconds: " << i << '\n';
                     std::this_thread::sleep_for(std::chrono::seconds(1));//?
     
@@ -56,37 +55,32 @@ class Timer{
 
         //save txt information time and turn off display
        
-
         const char* currentTime = std::ctime(&start);//convert time fot char[]
 
         out << "\ncurrent time: " << currentTime << "25 minuts of learn\nand five minuts time-out";
         out.close();
 
-        SendMessage(HWND_BROADCAST, WM_SYSCOMMAND, SC_MONITORPOWER, (LPARAM)2);//turn off display
-        
     }
 
      ~Timer(){}
 };
 
 int main(){
+    // where be win application, press button chouse and input text
+    char select ='\0';
 
-    //Timer timer(1, "C:/learn.txt"); // where be win application, press button chouse and input text
-    char option{'\0'};
-    Timer* list = nullptr;
+    while(true){
+        std::cout << "press start 'Y' and 'N' to exit: ";
+        std::cin >> select;
+        if(select == 'n'){
+            break;
+        }
+            {
+                Timer timer(1,"C:/learn.txt");
+            timer.start();
+            }
+        }
 
-    do{
-        list = new Timer{1,"C:/learn.txt"};
-        list->start();
-
-        std::cout << "press enter y to continue/press enter n to exit: ";
-        
-        list->~Timer();
-
-        std::cin >> option;
-
-    }while(option != 'n');
-    
-
+    std::cout << "\nprogramm exit";
     return 0;
 }
