@@ -13,7 +13,6 @@ class Timer{
     std::fstream out;
     public:
     Timer(int value, std::string path_):min(value),path(path_){
-            //block code for protection error input
         out.open(path,std::ios_base::app);
 
         if(!out.is_open()){
@@ -55,12 +54,13 @@ class Timer{
                             for(int i = 300; i > 0; --i){
                             std::cout << "\ntime-out seconds: " << i << '\n';
                             std::this_thread::sleep_for(std::chrono::seconds(1));//?
-            
                             }
+                            Beep(1000,1000);
                         }
                     }
                     }       
                 }//while
+                Beep(1000,5000);
             }
         }
 
