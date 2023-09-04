@@ -2,7 +2,7 @@
 
 int main(){
     Timer timer{25,"C:/learn.txt"};
-    timer.start();
+    timer.startTimer();
     
     return 0;
 }
