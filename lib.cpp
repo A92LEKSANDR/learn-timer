@@ -6,93 +6,91 @@
 #include <Windows.h>
 #include <conio.h>
 #include <cstdlib>
+#include <tchar.h>
+
+char getInput(){
+    char select;
+    bool input = false;
+
+    while(!input){
+        std::cin >> select;
+        if(std::cin.fail()){
+            std::cin.clear();
+            std::cin.ignore(32767, '\n');
+        }
+        else if(!std::cin.fail()){
+            input = true;
+        }
+    }
+    return select;
+}
+
 
 class Timer{
-    int min;
-    std::string path;
-    std::fstream out;
-    const char* currentTime;
+    //engane Timer in private
+    class Framework{
+        uint8_t minuts;
+        std::time_t startTime;//keep current time
+        const char* currentTime;//from convert time in string
+        std::ofstream out;//save advances
 
-    void exitProgramm(){
-                currentTime = std::ctime(&start);//convert time fot char[]
-                out << "\nbreak programm:( " << currentTime <<'\n';
-                out.close();
-        return;
-    }
+        public:
+        Framework(){}
 
-    //300 seconds pause 
-    void pause(){
-        for(int i = 300; i > 0; --i){
-            std::cout << "\ntime-out seconds: " << i << '\n';
-            std::this_thread::sleep_for(std::chrono::seconds(1));
+        Framework(uint8_t min, std::string path_):minuts(min),startTime(std::time(0)),currentTime(std::ctime(&startTime)){
+            out.open(path_,std::ios_base::app);
         }
-    }
 
-    //work programm and chouse for hide menu
-    void work(){
-        while(min > 0){
-            --min;
-                for(int i = 59; i > 0; --i){
-                std::cout << "\nTime of minuts: " << min << " seconds: " << i << '\n';
-                std::this_thread::sleep_for(std::chrono::seconds(1));
-                
-                //time out block and leason 
-                if(_kbhit()){
-                char ch = getch();
+        void start(){
+            //timeout seconds
+            while(minuts > 0){
+                --minuts;
+                for(int i = 59; i >= 0; --i){
+                    if(_kbhit()){
+                        //std::cout << "key pressed\n";
+                        char ch = _getch();
+                        if(ch == 'q'){
+                            break;//exit in basic while()
+                        }
+                        else if(ch == 'p'){
+                            for(int i = 300; i > 0; --i){
+                                if(_kbhit()){
+                                    char ch = _getch();
+                                    if(ch == 'q'){
+                                        break;//exit in inner while(pause)
+                                    }
+                                }
+                                std::cout << "time-out:"<< i << '\n';// winapi dont show
+                                std::this_thread::sleep_for(std::chrono::seconds(1));
+                            }
+                            out << currentTime << " - 5 minuts time-out\n";
+                        }
+                    }//if pressed key
 
-                    switch(ch){
-                        case 112: pause();break;
-                        case 27: exitProgramm(); goto EXIT;break;
-                        default: continue;
-                    }
-                }
-                }       
-        }//while
+                    std::cout << "seconds: " << i << '\n';// winapi dont show
+                    std::this_thread::sleep_for(std::chrono::seconds(1));
+                }        
+            }//while basic
+            out << currentTime << " - 25 minuts work, well done!!!\n";
+        }//START
 
-        currentTime = std::ctime(&start);//convert time fot char[]
+        ~Framework(){ }
+    };//framework end
 
-        out << "\n25 min of learn to executed! well done!!!\n" << currentTime <<'\n';
-        out.close();
-
-        EXIT:
-        Beep(2000,1000);
-    }
-
+    Framework framework;
     public:
-    std::time_t start;
 
-    Timer(int value, std::string path_):min(value),path(path_), start(std::time(0)){
-        out.open(path,std::ios_base::app);
+    Timer(uint8_t minuts, std::string path_):framework(minuts,path_){}
 
-        if(!out.is_open()){
-            bool openFile = false;
-
-            while(!openFile){
-                std::cout << "path not found/ file.txt!\npress enter try again path: ";
-                std::cin >> path;
-                if(out.is_open()){
-                    openFile = true;
-                }
-            }
+    void start(){
+        char select;
+        while(select != 'q'){
+            framework.start();
+            std::cout << "continue?\npress c or q to quit:";
+            select = getInput();
         }
+        std::cout << "program exit, goodbye!!!\n";
     }
 
-    void startTimer(){
-        char select ='\0';
-
-        while(true){
-            std::cout << "press start timer 'S' and 'ESC' to exit: ";
-            std::cin >> select;
-
-            if(select == 27){
-                break;
-            }
-            else if(select == 115){
-                work();
-            }
-        }
-        return;
-    }
-
-     ~Timer(){}
+     ~Timer(){ }
 };
