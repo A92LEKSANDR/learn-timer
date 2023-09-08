@@ -25,11 +25,12 @@ char getInput(){
     return select;
 }
 
-
 class Timer{
+    int minuts;
+    std::string path;
     //engane Timer in private
     class Framework{
-        uint8_t minuts;
+        int minuts;
         std::time_t startTime;//keep current time
         const char* currentTime;//from convert time in string
         std::ofstream out;//save advances
@@ -37,37 +38,42 @@ class Timer{
         public:
         Framework(){}
 
-        Framework(uint8_t min, std::string path_):minuts(min),startTime(std::time(0)),currentTime(std::ctime(&startTime)){
+        Framework(int min, std::string path_):minuts(min),startTime(std::time(0)),currentTime(std::ctime(&startTime)){
             out.open(path_,std::ios_base::app);
         }
 
         void start(){
             //timeout seconds
-            while(minuts > 0){
+            bool exit = false;
+            while(minuts > 0 || exit != true){
                 --minuts;
-                for(int i = 59; i >= 0; --i){
+                for(int i = 59; i > 0; --i){//display seconds
                     if(_kbhit()){
-                        //std::cout << "key pressed\n";
-                        char ch = _getch();
-                        if(ch == 'q'){
-                            break;//exit in basic while()
-                        }
-                        else if(ch == 'p'){
-                            for(int i = 300; i > 0; --i){
-                                if(_kbhit()){
-                                    char ch = _getch();
-                                    if(ch == 'q'){
-                                        break;//exit in inner while(pause)
+                        switch(_getch()){
+                            case 'q':
+                                exit = true;
+                                break;
+                            case 'p': 
+                                for(int i = 300; i > 0; --i){
+                                    if(_kbhit()){
+                                        char ch = _getch();
+                                        if(ch == 'q'){
+                                            break;//exit in inner while(pause)
+                                        }
                                     }
+                                    std::cout << "time-out:"<< i << '\n';// winapi dont show
+                                    std::this_thread::sleep_for(std::chrono::seconds(1));
                                 }
-                                std::cout << "time-out:"<< i << '\n';// winapi dont show
-                                std::this_thread::sleep_for(std::chrono::seconds(1));
-                            }
-                            out << currentTime << " - 5 minuts time-out\n";
-                        }
-                    }//if pressed key
+                                out << currentTime << " - 5 minuts time-out\n";
+                                break;
+                                default: std::cout << "p - pause / q - quit\n";
+                        }   
 
-                    std::cout << "seconds: " << i << '\n';// winapi dont show
+                    }//if pressed key
+                    else if(exit){
+                        break;
+                    }
+                    std::cout << "minuts: " <<  minuts << " seconds: " << i << '\n';// winapi dont show
                     std::this_thread::sleep_for(std::chrono::seconds(1));
                 }        
             }//while basic
@@ -77,20 +83,27 @@ class Timer{
         ~Framework(){ }
     };//framework end
 
-    Framework framework;
+    Framework* framework;
     public:
 
-    Timer(uint8_t minuts, std::string path_):framework(minuts,path_){}
+    Timer(int minuts_, std::string path_):minuts(minuts_),path(path_){
+    }
 
     void start(){
         char select;
-        while(select != 'q'){
-            framework.start();
-            std::cout << "continue?\npress c or q to quit:";
+        do{
+            std::cout << "press to S for start and continue timer or\npress q to quit:";
             select = getInput();
-        }
+
+            if(select == 's'){
+                framework = new Framework{minuts,path};
+                framework->start();
+                delete framework;
+            }
+        }while(select != 'q');
+
         std::cout << "program exit, goodbye!!!\n";
     }
 
-     ~Timer(){ }
+     ~Timer(){}
 };
